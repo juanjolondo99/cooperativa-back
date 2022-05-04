@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Cooperativa.Aplicaciones\Cooperativa.Aplicaciones.csproj" />
+    <ProjectReference Include="..\Cooperativa.Dominio\Cooperativa.Dominio.csproj" />
+    <ProjectReference Include="..\Cooperativa.Infraestructura.Datos\Cooperativa.Infraestructura.Datos.csproj" />
+  </ItemGroup>
+
+
+</Project>
