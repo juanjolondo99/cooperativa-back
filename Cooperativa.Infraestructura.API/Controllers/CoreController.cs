@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System;
 
 using Cooperativa.Dominio.Modelo;
-using Cooperativa.Aplicaciones.Servicios;
-using Cooperativa.Infraestructura.Datos.Contextos;
-using Cooperativa.Infraestructura.Datos.Repositorios;
+using Cooperativa.Infraestructura.API.SBPublisher.Interfaces;
+using Cooperativa.Infraestructura.ServiceBus.Eventos;
+using System.Threading.Tasks;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -16,51 +16,65 @@ namespace Cooperativa.Infraestructura.API.Controllers
     [ApiController]
     public class CoreController : ControllerBase
     {
-        AsociadoServicio CrearAsociadoServicio()
-        {
-            CooperativaContexto db = new CooperativaContexto();
-            AsociadoRepositorio repo = new AsociadoRepositorio(db);
-            AsociadoServicio servicio = new AsociadoServicio(repo);
-            return servicio;
-        }
 
-        ProductoServicio CrearProductoServicio()
-        {
-            CooperativaContexto db = new CooperativaContexto();
-            ProductoRepositorio repo = new ProductoRepositorio(db);
-            ProductoServicio servicio = new ProductoServicio(repo);
-            return servicio;
-        }
+        private IEventPublisher _publisher;
 
-        MovimientoServicio CrearMovimientoServicio()
+        public CoreController(IEventPublisher publisher)
         {
-            CooperativaContexto db = new CooperativaContexto();
-            MovimientoRepositorio repo = new MovimientoRepositorio(db);
-            MovimientoServicio servicio = new MovimientoServicio(repo);
-            return servicio;
+            _publisher = publisher;
         }
 
         // GET: api/<CoreController>
         [HttpGet]
-        public ActionResult<List<Asociado>> Get()
+        public async Task<ActionResult<List<Asociado>>> Get()
         {
-            var servicio = CrearAsociadoServicio();
-            return Ok(servicio.Listar());
+            var newVerAsociados = new EventoCola
+            {
+                tipo = "VerAsociados"
+            };
+
+            var VerAsociados = _publisher.PublicarEvento(newVerAsociados).GetAwaiter().GetResult();
+
+            if (VerAsociados == null)
+                throw new ArgumentNullException("Controller: No se recibió respuesta");
+
+            return Ok(VerAsociados.asociados);
         }
 
         // GET api/<CoreController>/5
         [HttpGet("{asociadoId}/productos")]
-        public ActionResult<List<Producto>> Get(Guid asociadoId)
+        public async Task<ActionResult<List<Producto>>> Get(Guid asociadoId)
         {
-            var servicio = CrearProductoServicio();
-            return Ok(servicio.ListarPorAsociadoId(asociadoId));
+            var newVerSaldos = new EventoCola
+            {
+                tipo = "VerSaldos",
+                asociadoId = asociadoId
+            };
+
+            var VerSaldos = _publisher.PublicarEvento(newVerSaldos).GetAwaiter().GetResult();
+
+            if (VerSaldos == null)
+                throw new ArgumentNullException("Controller: No se recibió respuesta");
+
+            return Ok(VerSaldos.saldos);
         }
 
         [HttpGet("{asociadoId}/producto/{productoId}")]
-        public ActionResult<List<Producto>> Get(Guid asociadoId, Guid productoId)
+        public async Task<ActionResult<List<Movimiento>>> Get(Guid asociadoId, Guid productoId)
         {
-            var servicio = CrearMovimientoServicio();
-            return Ok(servicio.ListarPorAsociadoIdYProductoId(asociadoId, productoId));
+            var newVerMovimientos = new EventoCola
+            {
+                tipo = "VerMovimientos",
+                asociadoId = asociadoId,
+                productoId = productoId
+            };
+
+            var VerMovimientos = _publisher.PublicarEvento(newVerMovimientos).GetAwaiter().GetResult();
+
+            if (VerMovimientos == null)
+                throw new ArgumentNullException("Controller: No se recibió respuesta");
+
+            return Ok(VerMovimientos.movimientos);
         }
 
     }

@@ -5,9 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Cooperativa.Aplicaciones\Cooperativa.Aplicaciones.csproj" />
     <ProjectReference Include="..\Cooperativa.Dominio\Cooperativa.Dominio.csproj" />
-    <ProjectReference Include="..\Cooperativa.Infraestructura.Datos\Cooperativa.Infraestructura.Datos.csproj" />
+    <ProjectReference Include="..\Cooperativa.Infraestructura.ServiceBus\Cooperativa.Infraestructura.ServiceBus.csproj" />
   </ItemGroup>
 
 

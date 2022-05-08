@@ -1,3 +1,5 @@
+using Cooperativa.Infraestructura.API.SBPublisher;
+using Cooperativa.Infraestructura.API.SBPublisher.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,6 +29,7 @@ namespace Cooperativa.Infraestructura.API
         {
             services.AddCors();
             services.AddControllers();
+            services.AddSingleton<IEventPublisher, EventPublisher>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

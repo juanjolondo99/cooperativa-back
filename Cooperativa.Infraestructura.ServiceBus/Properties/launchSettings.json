@@ -1,0 +1,10 @@
+﻿{
+  "profiles": {
+    "Cooperativa.Infraestructura.ServiceBus": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
